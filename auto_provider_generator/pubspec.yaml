@@ -1,10 +1,10 @@
 name: auto_provider_generator
-description: Code generator for @Screen annotation
+description: Code generator for @AutoProvid annotation, enabling automatic Bloc state management With lazy singletons GetIt and auto routing integration.
 homepage: https://github.com/mohamadalghanem474/auto_provider
 repository: https://github.com/mohamadalghanem474/auto_provider
 issue_tracker: https://github.com/mohamadalghanem474/auto_provider/issues
 documentation: https://github.com/mohamadalghanem474/auto_provider#readme
-version: 0.0.3
+version: 0.0.4
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
@@ -17,3 +17,10 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.0
+
+topics:
+  - bloc
+  - cubit
+  - state-management
+  - getit
+  - auto-router
