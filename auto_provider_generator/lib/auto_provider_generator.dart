@@ -1,5 +1,6 @@
 library AutoProviderGenerator;
 
+import 'dart:async';
 import 'package:auto_provider_annotation/auto_provider_annotation.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
@@ -13,6 +14,14 @@ class _AutoProviderBuilder implements Builder {
   final buildExtensions = const {
     r'$lib$': ['core/router/auto_provider.dart'],
   };
+  Future<bool> _isPartFile(AssetId id, BuildStep step) async {
+    try {
+      final content = await step.readAsString(id);
+      return content.contains(RegExp(r'^\s*part of\s+', multiLine: true));
+    } catch (_) {
+      return true;
+    }
+  }
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -30,8 +39,9 @@ class _AutoProviderBuilder implements Builder {
     // ----------------------------------------
     for (final asset in assets) {
       if (asset.path.contains('lib/core/router/auto_provider.dart')) continue;
-      final lib = await resolver.libraryFor(asset);
+      if (await _isPartFile(asset, buildStep)) continue; // skip part files
 
+      final lib = await resolver.libraryFor(asset);
       for (final element in lib.exportNamespace.definedNames2.values) {
         if (element is! ClassElement) continue;
         final superName =
@@ -51,6 +61,8 @@ class _AutoProviderBuilder implements Builder {
     // ----------------------------------------
     for (final asset in assets) {
       if (asset.path.contains('lib/core/router/auto_provider.dart')) continue;
+      if (await _isPartFile(asset, buildStep)) continue; // skip part files
+
       final lib = await resolver.libraryFor(asset);
 
       bool hasAnnotatedScreen = false;
@@ -132,7 +144,7 @@ class _AutoProviderBuilder implements Builder {
         routeBuilders.writeln('        return const $className();');
       } else if (deps.length == 1) {
         routeBuilders.writeln('        return BlocProvider.value(');
-        routeBuilders.writeln('          value: sl<${deps.first}>(),');
+        routeBuilders.writeln('          value: GetIt.I<${deps.first}>(),');
         routeBuilders.writeln('          child: const $className(),');
         routeBuilders.writeln('        );');
       } else {
@@ -140,7 +152,7 @@ class _AutoProviderBuilder implements Builder {
         routeBuilders.writeln('          providers: [');
         for (final dep in deps) {
           routeBuilders
-              .writeln('            BlocProvider.value(value: sl<$dep>()),');
+              .writeln('            BlocProvider.value(value: GetIt.I<$dep>()),');
         }
         routeBuilders.writeln('          ],');
         routeBuilders.writeln('          child: const $className(),');
@@ -159,7 +171,7 @@ class _AutoProviderBuilder implements Builder {
       ..writeln("import 'package:flutter/foundation.dart';")
       ..writeln("import 'package:flutter/material.dart';")
       ..writeln("import 'package:flutter_bloc/flutter_bloc.dart';")
-      ..writeln("import 'package:$packageName/core/injectable/get_it.dart';")
+      ..writeln("import 'package:get_it/get_it.dart';")
       ..writeln(usedBlocImports.join('\n'))
       ..writeln(imports.join('\n'))
       ..writeln()
@@ -190,9 +202,9 @@ class _AutoProviderBuilder implements Builder {
     for (final dep in depToRoutes.keys) {
       final setName = '_${_camel(dep)}';
       buffer
-        ..writeln('    if (sl.checkLazySingletonInstanceExists<$dep>()) {')
+        ..writeln('    if (GetIt.I.checkLazySingletonInstanceExists<$dep>()) {')
         ..writeln('      if (!$setName.contains(name)) {')
-        ..writeln('        sl.resetLazySingleton<$dep>();')
+        ..writeln('        GetIt.I.resetLazySingleton<$dep>();')
         ..writeln('      }')
         ..writeln('    }');
     }
