@@ -1,39 +1,70 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# auto_provider_generator
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+`auto_provider_generator` scans your Flutter project for widgets annotated with
+`@AutoProvid()` and builds a complete auto-wired routing layer in
+`lib/core/router/auto_provider.dart`. The generated file:
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+- Wraps each annotated screen with the Bloc/Cubit dependencies listed in the
+  annotation.
+- Provides an `AutoProvider` navigator observer that logs transitions and keeps
+  track of the current location.
+- Resets lazy singletons registered in `get_it` when their routes are popped so
+  they do not leak state across screens.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## How it works
 
-## Features
+1. The builder finds every Bloc/Cubit/HydratedBloc in `lib/**.dart`.
+2. It matches all widgets annotated with `@AutoProvid()` and reads the
+   dependency list plus the `static const routeName` on the widget.
+3. It emits:
+   - Imports for every referenced Bloc/Cubit and screen.
+   - `BlocProvider`/`MultiBlocProvider` wrappers per route.
+   - A navigator observer and helper methods (`find`, `onGenerateRoute`,
+     `navigatorKey`, etc.).
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## Setup
 
-## Getting started
+```yaml
+dependencies:
+  auto_provider_annotation:
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+dev_dependencies:
+  auto_provider_generator:
+  build_runner:
 ```
 
-## Additional information
+## Running the generator
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+From the root of the consuming package:
+
+```bash
+dart run build_runner build       # one-off generation
+# or
+dart run build_runner watch       # keep it fresh during development
+```
+
+Whenever you add a new screen or update dependencies, rerun the builder so
+`lib/core/router/auto_provider.dart` stays in sync.
+
+## Using the generated router
+
+```dart
+import 'package:your_app/core/router/auto_provider.dart';
+
+MaterialApp(
+  navigatorKey: AutoProvider.navigatorKey,
+  navigatorObservers: [AutoProvider.observer],
+  onGenerateRoute: AutoProvider.onGenerateRoute,
+);
+```
+
+You can also call `AutoProvider.find(routeName)` to get the widget for a route,
+for example when driving a custom navigation stack.
+
+## Tips
+
+- Make sure every annotated widget exposes a unique `static const routeName`.
+- Register your Blocs/Cubits as lazy singletons inside `get_it` so the generated
+  cleanup code can dispose of them when their routes leave the stack.
+- Turn on `AutoProvider.enableLogging` during development to see route changes
+  in the console.

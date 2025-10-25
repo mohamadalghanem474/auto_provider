@@ -1,6 +1,9 @@
 name: auto_provider_annotation
 description: Annotation package for auto_provider_generator code generation
-publish_to: none
-version: 1.0.0
+homepage: https://github.com/mohamadalghanem474/auto_provider
+repository: https://github.com/mohamadalghanem474/auto_provider
+issue_tracker: https://github.com/mohamadalghanem474/auto_provider/issues
+documentation: https://github.com/mohamadalghanem474/auto_provider#readme
+version: 0.0.1
 environment:
   sdk: ">=3.0.0 <4.0.0"
