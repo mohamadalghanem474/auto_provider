@@ -262,7 +262,7 @@ class _AutoProviderBuilder implements Builder {
       ..write(routeBuilders.toString())
       ..writeln('      default:')
       ..writeln(
-          "        return Scaffold(body: Center(child: Text('No Annutation @AutoProvider() on route \$name')));")
+          "        return Scaffold(body: Center(child: Text(You Forgot Add @AutoProvid() On Route \$name, textDirection: TextDirection.ltr),));")
       ..writeln('    }')
       ..writeln('  }')
       ..writeln()
