@@ -15,9 +15,6 @@ Add the annotation package to any target package that declares annotated widgets
 ```yaml
 dependencies:
   auto_provider_annotation:
-    git:
-      url: https://github.com/mohamadalghanem474/auto_provider.git
-      path: auto_provider_annotation
 ```
 
 If you also run the generator in the same package, add `auto_provider_generator` and `build_runner` to your `dev_dependencies`.
