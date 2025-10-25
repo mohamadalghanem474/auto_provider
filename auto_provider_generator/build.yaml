@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      auto_provider_generator|autoProviderBuilder:
+        generate_for:
+          - lib/**.dart
+
+builders:
+  auto_provider_generator:
+    import: "package:auto_provider_generator/auto_provider_generator.dart"
+    builder_factories: ["autoProviderBuilder"]
+    build_extensions: { "$lib$": ["/core/router/auto_provider.dart"] }
+    auto_apply: root_package
+    build_to: source

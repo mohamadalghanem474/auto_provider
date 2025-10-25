@@ -1,0 +1,6 @@
+name: auto_provider_annotation
+description: Annotation package for auto_provider_generator code generation
+publish_to: none
+version: 1.0.0
+environment:
+  sdk: ">=3.0.0 <4.0.0"
