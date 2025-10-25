@@ -10,7 +10,9 @@ dependencies:
   analyzer: ^8.1.0
   build: ^4.0.2
   auto_provider_annotation:
-    path: ../auto_provider_annotation
+    git:
+      url: https://github.com/mohamadalghanem474/auto_provider.git
+      path: auto_provider_annotation
   glob: ^2.1.2
 
 dev_dependencies:
