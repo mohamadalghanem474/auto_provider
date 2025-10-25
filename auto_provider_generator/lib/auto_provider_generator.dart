@@ -151,8 +151,8 @@ class _AutoProviderBuilder implements Builder {
         routeBuilders.writeln('        return MultiBlocProvider(');
         routeBuilders.writeln('          providers: [');
         for (final dep in deps) {
-          routeBuilders
-              .writeln('            BlocProvider.value(value: GetIt.I<$dep>()),');
+          routeBuilders.writeln(
+              '            BlocProvider.value(value: GetIt.I<$dep>()),');
         }
         routeBuilders.writeln('          ],');
         routeBuilders.writeln('          child: const $className(),');
@@ -177,12 +177,15 @@ class _AutoProviderBuilder implements Builder {
       ..writeln()
       ..writeln('class AutoProvider extends NavigatorObserver {')
       ..writeln('  AutoProvider._internal();')
-      ..writeln('  static final AutoProvider _instance = AutoProvider._internal();')
+      ..writeln(
+          '  static final AutoProvider _instance = AutoProvider._internal();')
       ..writeln()
-      ..writeln('  /// Required Add Observer On MaterialApp To Use AutoProvider')
+      ..writeln(
+          '  /// Required Add Observer On MaterialApp To Use AutoProvider')
       ..writeln('  static AutoProvider get observer => _instance;')
       ..writeln()
-      ..writeln('  /// Global navigator key for accessing navigator outside BuildContext')
+      ..writeln(
+          '  /// Global navigator key for accessing navigator outside BuildContext')
       ..writeln('  static final navigatorKey = GlobalKey<NavigatorState>();')
       ..writeln()
       ..writeln('  /// Tracks the current active route name')
@@ -196,9 +199,7 @@ class _AutoProviderBuilder implements Builder {
       ..writeln('  /// Handles dependency cleanup based on route transitions')
       ..writeln('  void _handleRouteChange(Route<dynamic>? route) {')
       ..writeln('    final name = route?.settings.name;')
-      ..writeln('    if (name == null) return;')
-      ..writeln('    currentLocation = name;');
-
+      ..writeln('    if (name == null) return;');
     for (final dep in depToRoutes.keys) {
       final setName = '_${_camel(dep)}';
       buffer
@@ -214,12 +215,14 @@ class _AutoProviderBuilder implements Builder {
       ..writeln()
       ..writeln('  /// Called when a new route is pushed onto the navigator.')
       ..writeln('  @override')
-      ..writeln('  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {')
-      ..writeln('    _handleRouteChange(route);')
+      ..writeln(
+          '  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {')
+      ..writeln('    currentLocation = route.settings.name;')
       ..writeln('    if (kDebugMode && enableLogging) {')
       ..writeln('      developer.log(')
       ..writeln('        name: "✈️ PUSH",')
-      ..writeln('        "\${previousRoute?.settings.name != null ? \'\${previousRoute?.settings.name} ➡️ \' : ""} \${route.settings.name}",')
+      ..writeln(
+          '        "\${previousRoute?.settings.name != null ? \'\${previousRoute?.settings.name} ➡️ \' : ""} \${route.settings.name}",')
       ..writeln('      );')
       ..writeln('    }')
       ..writeln('    super.didPush(route, previousRoute);')
@@ -227,21 +230,27 @@ class _AutoProviderBuilder implements Builder {
       ..writeln()
       ..writeln('  /// Called when a route is popped off the navigator.')
       ..writeln('  @override')
-      ..writeln('  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {')
+      ..writeln(
+          '  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {')
+      ..writeln('    currentLocation = route.settings.name;')
       ..writeln('    _handleRouteChange(previousRoute);')
       ..writeln('    if (kDebugMode && enableLogging)')
-      ..writeln('      developer.log(name: "✈️ POP", "\${previousRoute?.settings.name}");')
+      ..writeln(
+          '      developer.log(name: "✈️ POP", "\${previousRoute?.settings.name}");')
       ..writeln('    super.didPop(route, previousRoute);')
       ..writeln('  }')
       ..writeln()
       ..writeln('  /// Called when a route is replaced with a new one.')
       ..writeln('  @override')
-      ..writeln('  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {')
+      ..writeln(
+          '  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {')
+      ..writeln('    currentLocation = newRoute?.settings.name;')
       ..writeln('    _handleRouteChange(newRoute);')
       ..writeln('    if (kDebugMode && enableLogging) {')
       ..writeln('      developer.log(')
       ..writeln('        name: "✈️ REPLACE",')
-      ..writeln('        "\${oldRoute?.settings.name != null ? \'\${oldRoute?.settings.name} 🔄 \' : ""} \${newRoute?.settings.name}",')
+      ..writeln(
+          '        "\${oldRoute?.settings.name != null ? \'\${oldRoute?.settings.name} 🔄 \' : ""} \${newRoute?.settings.name}",')
       ..writeln('      );')
       ..writeln('    }')
       ..writeln('    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);')
@@ -249,10 +258,13 @@ class _AutoProviderBuilder implements Builder {
       ..writeln()
       ..writeln('  /// Called when a route is removed from the navigator.')
       ..writeln('  @override')
-      ..writeln('  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {')
+      ..writeln(
+          '  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {')
+      ..writeln('    currentLocation = route.settings.name;')
       ..writeln('    _handleRouteChange(previousRoute);')
       ..writeln('    if (kDebugMode && enableLogging)')
-      ..writeln('      developer.log(name: "✈️ REMOVE", \'🔴 \${route.settings.name}\');')
+      ..writeln(
+          '      developer.log(name: "✈️ REMOVE", \'🔴 \${route.settings.name}\');')
       ..writeln('    super.didRemove(route, previousRoute);')
       ..writeln('  }')
       ..writeln()
@@ -262,12 +274,14 @@ class _AutoProviderBuilder implements Builder {
       ..write(routeBuilders.toString())
       ..writeln('      default:')
       ..writeln(
-          "        return Scaffold(body: Center(child: Text('You Forgot Add @AutoProvid() On Route \$name', textDirection: TextDirection.ltr),));")
+          "        return Scaffold(body: Center(child: Text('You Must Add @AutoProvid() On Route \$name', textDirection: TextDirection.ltr),));")
       ..writeln('    }')
       ..writeln('  }')
       ..writeln()
-      ..writeln('  /// Default OnGenerateRoute You Can Customize It In Other File')
-      ..writeln('  static Route<dynamic> onGenerateRoute(RouteSettings settings) {')
+      ..writeln(
+          '  /// Default OnGenerateRoute You Can Customize It In Other File')
+      ..writeln(
+          '  static Route<dynamic> onGenerateRoute(RouteSettings settings) {')
       ..writeln(
           '    return MaterialPageRoute(settings: settings, builder: (_) => find(settings.name));')
       ..writeln('  }')
