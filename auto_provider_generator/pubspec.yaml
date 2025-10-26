@@ -4,7 +4,7 @@ homepage: https://github.com/mohamadalghanem474/auto_provider
 repository: https://github.com/mohamadalghanem474/auto_provider
 issue_tracker: https://github.com/mohamadalghanem474/auto_provider/issues
 documentation: https://github.com/mohamadalghanem474/auto_provider#readme
-version: 0.0.8
+version: 0.0.9
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
