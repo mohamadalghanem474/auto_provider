@@ -1,1 +1,0 @@
-auto_provider_generator/README.md

@@ -24,3 +24,7 @@ topics:
   - state-management
   - getit
   - auto-router
+  
+screenshots:
+  - description: The auto_provider_generator package logo.
+    path: ../screenshots/logo.png
